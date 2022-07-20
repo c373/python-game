@@ -1,0 +1,4 @@
+Keep movement classic where the snake jumps to the next position at a specific interval (speed) internally.
+The drawing of the snake should be interpolated so that the animation to the next position is smooth.
+
+Could be something to do a tech demo on: interpolation.
