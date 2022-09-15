@@ -22,7 +22,8 @@ class game(object):
         self.GRID_WIDTH, self.GRID_HEIGHT = 20, 20
 
         # center the grid on the screen
-        self.GRID_X, self.GRID_Y = (self.SCREEN_WIDTH / 2) - (self.GRID_WIDTH * self.CELL_SIZE) / 2, (self.SCREEN_HEIGHT / 2) - 50 - (self.GRID_HEIGHT * self.CELL_SIZE) / 2
+        self.GRID_X = (self.SCREEN_WIDTH / 2) - (self.GRID_WIDTH * self.CELL_SIZE) / 2
+        self.GRID_Y = (self.SCREEN_HEIGHT / 2) - 50 - (self.GRID_HEIGHT * self.CELL_SIZE) / 2
 
         # create the displayable screen, its a surface that we can draw to
         self.screen = pygame.display.set_mode((800, 600))
@@ -39,12 +40,15 @@ class game(object):
         # init player snake
         self.player = snake.snake([1, 1], self.CELL_SIZE)
 
+        self.generateFood()
+
+    def generateFood(self):
         while True:
-            self.food = [random.randrange(0, self.GRID_WIDTH), random.randrange(0, self.GRID_HEIGHT)]
+            self.food = \
+            [random.randrange(0, self.GRID_WIDTH), random.randrange(0, self.GRID_HEIGHT)]
 
-            if self.food[0] != self.player.currentLoc[0] or self.food[1] != self.player.currentLoc[1]:
-                break
-
+            if not self.player.checkInSnake(self.food):
+                break 
 
     def update(self, dt):
 
@@ -75,35 +79,56 @@ class game(object):
 
         if not self.gameOver:
 
+            self.player.update(dt)
+
             # check that the snake is not out of bounds
-            if self.player.nextLoc[0] < 0 or self.player.nextLoc[1] < 0 or self.player.nextLoc[0] >= self.GRID_WIDTH or self.player.nextLoc[1] >= self.GRID_HEIGHT:
+            if \
+                self.player.nextLoc[0] < 0 or \
+                self.player.nextLoc[1] < 0 or \
+                self.player.nextLoc[0] >= self.GRID_WIDTH or \
+                self.player.nextLoc[1] >= self.GRID_HEIGHT:
+
                 # end game if true
                 self.gameOver = True
 
-            self.player.update(dt)
+            if self.player.checkInSnake(self.food):
+                # self.player.grow()
+                self.generateFood()
 
 
     def draw(self):
-    
+
         # clear the screen with black
         self.screen.fill(self.COLORS.BLACK)
-    
+
         # draw the grid
-        grid.drawGrid(pygame, self.screen, self.COLORS.WHITE, self.GRID_X, self.GRID_Y, self.GRID_WIDTH, self.GRID_HEIGHT, self.CELL_SIZE)
+        grid.drawGrid(pygame, \
+                      self.screen, \
+                      self.COLORS.WHITE, \
+                      self.GRID_X, self.GRID_Y, \
+                      self.GRID_WIDTH, \
+                      self.GRID_HEIGHT, \
+                      self.CELL_SIZE \
+                      )
 
         # draw the food
-        pygame.draw.rect(self.screen, self.COLORS.RED, pygame.Rect(self.GRID_X + self.food[0] * self.CELL_SIZE, self.GRID_Y + self.food[1] * self.CELL_SIZE, self.CELL_SIZE, self.CELL_SIZE))
+        pygame.draw.rect(self.screen, \
+                         self.COLORS.RED, \
+                         pygame.Rect(self.GRID_X + self.food[0] * self.CELL_SIZE, \
+                                     self.GRID_Y + self.food[1] * self.CELL_SIZE, \
+                                     self.CELL_SIZE, self.CELL_SIZE) \
+                         )
 
         # draw the player snake
         self.player.draw(pygame, self.screen, self.GRID_X, self.GRID_Y)
-    
+
         # flush the buffer and display on the screen
         pygame.display.flip()
 
 
     def run(self):
         while self.running:
-        
+
             self.dt = self.clock.tick(self.fps)/1000.0
             self.update(self.dt)
             self.draw()

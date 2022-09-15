@@ -7,3 +7,11 @@ def lerp(start:float, end:float, pct:float) -> float:
 
 def easeIn(t:float, e:float) -> float:
     return (pow(t, e))
+
+def clamp(num, min, max):
+    if num > max:
+        return max
+    elif num < min:
+        return min
+
+    return num
