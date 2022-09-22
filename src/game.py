@@ -38,7 +38,7 @@ class game(object):
         self.dt = 0
 
         # init player snake
-        self.player = snake.snake([1, 1], self.CELL_SIZE)
+        self.player = snake.snake([0, 0], self.CELL_SIZE)
 
         self.generateFood()
 
@@ -79,8 +79,6 @@ class game(object):
 
         if not self.gameOver:
 
-            self.player.update(dt)
-
             # check that the snake is not out of bounds
             if \
                 self.player.nextLoc[0] < 0 or \
@@ -95,6 +93,7 @@ class game(object):
                 self.player.grow()
                 self.generateFood()
 
+            self.player.update(dt)
 
     def draw(self):
 

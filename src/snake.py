@@ -2,6 +2,7 @@ import utils
 
 class segment:
     _location = [0, 0]
+    _lastLoc = [0, 0]
 
     def __init__(self, initLoc) -> None:
         self._location = initLoc[:]
@@ -10,6 +11,7 @@ class segment:
         return self._location[:]
 
     def MoveBy(self, deltaLoc: list):
+        self._lastLoc = self._location[:]
         self._location[0] = self._location[0] + deltaLoc[0]
         self._location[1] = self._location[1] + deltaLoc[1]
 
@@ -28,39 +30,25 @@ class segment:
 
     def drawLerped(self, pygame, surface, x_offset, y_offset, cellSize, color, nextLoc, pct) -> None:
         lerpedLoc = [
-            utils.lerp(self._location[0], nextLoc[0], pct),
-            utils.lerp(self._location[1], nextLoc[1], pct)
+            utils.lerp(self._lastLoc[0], self._location[0], pct),
+            utils.lerp(self._lastLoc[1], self._location[1], pct)
         ]
+        pygame.draw.rect(surface, color, pygame.Rect(x_offset + cellSize * self._location[0], y_offset + cellSize * self._location[1], cellSize, cellSize))
 
-        pygame.draw.rect(surface, \
-                         color, \
-                         pygame.Rect(x_offset + cellSize * self._location[0], \
-                                     y_offset + cellSize * self._location[1], \
-                                     cellSize, \
-                                     cellSize \
-                                     ) \
-                         )
+        # pygame.draw.rect(surface, color, pygame.Rect(x_offset + cellSize * self._lastLoc[0], y_offset + cellSize * self._lastLoc[1], cellSize, cellSize))
 
-        pygame.draw.rect(surface, \
-                         color, \
-                         pygame.Rect(x_offset + cellSize * lerpedLoc[0], \
-                                     y_offset + cellSize * lerpedLoc[1], \
-                                     cellSize, \
-                                     cellSize \
-                                     ) \
-                         )
+        # pygame.draw.rect(surface, color, pygame.Rect(x_offset + cellSize * lerpedLoc[0], y_offset + cellSize * lerpedLoc[1], cellSize, cellSize))
 
 
 class snake:
 
-    __color = [255, 255, 255]
+    __color :list[int] = [255, 255, 255]
     nextLoc : list[int] = [0, 0]
-    direction = [1, 0]
+    direction : list[int] = [1, 0]
 
     speed : bool
     __segments: list[segment]
-    __moveInterval : float
-    moveInteval: float
+    moveInterval: float
     timeSinceLastMove : float
     CELL_SIZE : float
 
@@ -71,8 +59,7 @@ class snake:
         self.speed = False
         self.__segments = [segment(initLoc)]
         self.__size = 0
-        self.__moveInterval = 0.5
-        self.moveInterval = 0.25
+        self.moveInterval = 0.5
         self.timeSinceLastMove = 0
         self.CELL_SIZE = CELL_SIZE
         
@@ -80,6 +67,7 @@ class snake:
     def grow(self):
         self.__segments.append(segment(self.__segments[self.__size].GetLocation()))
         self.__size = self.__size + 1
+        self.moveInterval -= utils.lerp(0.0, 0.0125, 1)
 
     def moveBy(self, deltaLoc: list):
 
@@ -100,15 +88,12 @@ class snake:
     def update(self, dt) -> None:
         self.timeSinceLastMove += dt
 
-        if self.speed:
-            self.moveInterval = self.__moveInterval / 2
-        else:
-            self.moveInterval = self.__moveInterval
+        realMoveInterval = self.moveInterval / 2 if self.speed else self.moveInterval
 
-        if self.timeSinceLastMove > self.moveInterval:
-            self.moveBy(self.direction)
+        if self.timeSinceLastMove > realMoveInterval:
             self.nextLoc[0] = self.__segments[0]._location[0] + self.direction[0]
             self.nextLoc[1] = self.__segments[0]._location[1] + self.direction[1]
+            self.moveBy(self.direction)
             self.timeSinceLastMove = 0
 
     def draw(self, pygame, surface, x_offset, y_offset) -> None:
