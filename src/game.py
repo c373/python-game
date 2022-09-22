@@ -92,7 +92,7 @@ class game(object):
                 self.gameOver = True
 
             if self.player.checkInSnake(self.food):
-                # self.player.grow()
+                self.player.grow()
                 self.generateFood()
 
 

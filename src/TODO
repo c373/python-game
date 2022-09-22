@@ -11,6 +11,5 @@ the actual move. Once the move to the next location is completed the animation
 towards THAT final destination should begin
 
 Currently the lerping animation is "ahead" of the actual current location
-
-^^^ FIXED!! Works perfect now and a beneficial by-product is that the movement
-feels buffered.
+--------------------------------------------------------------------------------
+INCOMPLETE
