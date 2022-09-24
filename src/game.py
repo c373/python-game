@@ -1,11 +1,12 @@
-import sys, pygame, grid, snake, random
+import sys, pygame, grid, snake, random, math
 
 class game(object):
+    DEBUG = False
     class Colors:
         def __init__(self) -> None:
-            self.BLACK = [0, 0, 0]
-            self.WHITE = [255, 255, 255]
-            self.RED = [255, 0, 0]
+            self.BLACK = [36, 37, 51]
+            self.WHITE = [192, 202, 245]
+            self.RED = [255, 102, 128]
 
     def __init__(self) -> None:
         pygame.init()
@@ -38,7 +39,10 @@ class game(object):
         self.dt = 0
 
         # init player snake
-        self.player = snake.snake([0, 0], self.CELL_SIZE)
+        self.player = snake.snake([math.floor(self.GRID_WIDTH / 2), math.floor(self.GRID_HEIGHT / 2)], \
+                                  self.CELL_SIZE, \
+                                  self.COLORS.WHITE \
+                                  )
 
         self.generateFood()
 
@@ -47,7 +51,7 @@ class game(object):
             self.food = \
             [random.randrange(0, self.GRID_WIDTH), random.randrange(0, self.GRID_HEIGHT)]
 
-            if not self.player.checkInSnake(self.food):
+            if not self.player.checkInSnake(self.food, False):
                 break 
 
     def update(self, dt):
@@ -84,12 +88,14 @@ class game(object):
                 self.player.nextLoc[0] < 0 or \
                 self.player.nextLoc[1] < 0 or \
                 self.player.nextLoc[0] >= self.GRID_WIDTH or \
-                self.player.nextLoc[1] >= self.GRID_HEIGHT:
+                self.player.nextLoc[1] >= self.GRID_HEIGHT or \
+                self.player.checkInSnake(self.player.head.GetLocation(), True):
 
                 # end game if true
                 self.gameOver = True
+                self.COLORS.WHITE = self.COLORS.RED
 
-            if self.player.checkInSnake(self.food):
+            if self.player.checkInSnake(self.food, False):
                 self.player.grow()
                 self.generateFood()
 
@@ -107,7 +113,8 @@ class game(object):
                       self.GRID_X, self.GRID_Y, \
                       self.GRID_WIDTH, \
                       self.GRID_HEIGHT, \
-                      self.CELL_SIZE \
+                      self.CELL_SIZE, \
+                      self.DEBUG
                       )
 
         # draw the food
