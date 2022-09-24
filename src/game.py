@@ -1,7 +1,9 @@
-import sys, pygame, grid, snake, random, math
+import sys, pygame, grid, snake, random, math, controls
 
 class game(object):
     DEBUG = False
+    inputBuffer: controls.InputBuffer
+
     class Colors:
         def __init__(self) -> None:
             self.BLACK = [36, 37, 51]
@@ -38,10 +40,14 @@ class game(object):
         self.fps = 60
         self.dt = 0
 
+        # init the input buffer
+        self.inputBuffer = controls.InputBuffer(controls.Direction.RIGHT)
+
         # init player snake
         self.player = snake.snake([math.floor(self.GRID_WIDTH / 2), math.floor(self.GRID_HEIGHT / 2)], \
                                   self.CELL_SIZE, \
-                                  self.COLORS.WHITE \
+                                  self.COLORS.WHITE, \
+                                  self.inputBuffer
                                   )
 
         self.generateFood()
@@ -72,14 +78,18 @@ class game(object):
 
             if not self.gameOver:
                 if event.type == pygame.KEYDOWN:
+
                     if event.key == pygame.K_UP:
-                        self.player.direction = [0, -1]
+                        self.inputBuffer.push(controls.Direction.UP)
+
                     if event.key == pygame.K_DOWN:
-                        self.player.direction = [0, 1]
+                        self.inputBuffer.push(controls.Direction.DOWN)
+
                     if event.key == pygame.K_LEFT:
-                        self.player.direction = [-1, 0]
+                        self.inputBuffer.push(controls.Direction.LEFT)
+
                     if event.key == pygame.K_RIGHT:
-                        self.player.direction = [1, 0]
+                        self.inputBuffer.push(controls.Direction.RIGHT)
 
         if not self.gameOver:
 
@@ -88,8 +98,8 @@ class game(object):
                 self.player.nextLoc[0] < 0 or \
                 self.player.nextLoc[1] < 0 or \
                 self.player.nextLoc[0] >= self.GRID_WIDTH or \
-                self.player.nextLoc[1] >= self.GRID_HEIGHT or \
-                self.player.checkInSnake(self.player.head.GetLocation(), True):
+                self.player.nextLoc[1] >= self.GRID_HEIGHT:
+                # self.player.checkInSnake(self.player.head.GetLocation(), True):
 
                 # end game if true
                 self.gameOver = True
@@ -99,7 +109,8 @@ class game(object):
                 self.player.grow()
                 self.generateFood()
 
-            self.player.update(dt)
+            self.inputBuffer.update()
+            self.player.update(dt, self.inputBuffer)
 
     def draw(self):
 

@@ -1,3 +1,6 @@
+Feature: Visual
+??/??/?? ??:?? ??
+--------------------------------------------------------------------------------
 Keep movement classic where the snake jumps to the next position at a specific
 interval (speed) internally.
 
@@ -12,4 +15,25 @@ towards THAT final destination should begin
 
 Currently the lerping animation is "ahead" of the actual current location
 --------------------------------------------------------------------------------
-INCOMPLETE
+COMPLETE - The lerping animation happens on the tail segment of the snake
+giving the illusion of the snake coiling up before lurching to the next
+position
+
+
+
+Feature: Input Buffer
+09/24/22 05:53 AM
+--------------------------------------------------------------------------------
+The input buffer is already being implemented. There are just a few kinks to
+workout. I am not confident on the last in first out implementation of the
+stack, I want the latest input to take precendence ONLY if there hasn't been
+any input during a specified amount of time. This is the latest feature that I
+still haven't implemented. The idea of a time to live for the buffer, where the
+time between keystrokes is observed and if the time between keystrokes exceed a
+arbitrary (read tunable) time the buffer will be cleared out to allow for the
+new input to be recorded.
+--------------------------------------------------------------------------------
+	WORK IN PROGRESS - 09/24/22 6:14 AM
+--------------------------------------------------------------------------------
+		I need to review the stack and order in which inputs are added and
+		consumed. TTL of the buffer hasn't been implemented yet.

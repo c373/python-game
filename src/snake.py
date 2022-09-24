@@ -1,4 +1,4 @@
-import utils
+import utils, controls
 
 class segment:
     _location = [0, 0]
@@ -39,7 +39,8 @@ class snake:
 
     __color: list[int] = [255, 255, 255]
     nextLoc: list[int] = [0, 0]
-    direction: list[int] = [1, 0]
+    lastDirection: list[int]
+    direction: list[int]
 
     speed: bool
     head: segment
@@ -48,7 +49,9 @@ class snake:
     timeSinceLastMove: float
     CELL_SIZE: float
 
-    def __init__(self, initLoc: list[int], CELL_SIZE: float, COLOR: list[int]) -> None:
+    def __init__(self, initLoc: list[int], CELL_SIZE: float, COLOR: list[int], inputBuffer: controls.InputBuffer) -> None:
+        self.direction = inputBuffer.pop()
+        self.lastDirection = self.direction.copy()
         self.nextLoc[0] = initLoc[0] + self.direction[0]
         self.nextLoc[1] = initLoc[1] + self.direction[1]
 
@@ -58,8 +61,8 @@ class snake:
         self.__segments.append(segment([initLoc[0] - 2, initLoc[1]]))
         self.__size = 2
         self.head = self.__segments[0]
-        self.moveInterval = 0.5
-        self.timeSinceLastMove = 0
+        self.moveInterval = 4.0
+        self.timeSinceLastMove = 0.0
         self.CELL_SIZE = CELL_SIZE
         self.__color = COLOR
         
@@ -86,16 +89,20 @@ class snake:
 
         return False
 
-    def update(self, dt) -> None:
+    def update(self, dt: float, inputBuffer: controls.InputBuffer) -> None:
         self.timeSinceLastMove += dt
 
         realMoveInterval = self.moveInterval / 2 if self.speed else self.moveInterval
 
         if self.timeSinceLastMove > realMoveInterval:
+            self.direction = inputBuffer.pop()
+            self.lastDirection = self.direction.copy()
             self.nextLoc[0] = self.__segments[0]._location[0] + self.direction[0]
             self.nextLoc[1] = self.__segments[0]._location[1] + self.direction[1]
             self.moveBy(self.direction)
             self.timeSinceLastMove = 0
+
+        inputBuffer.DebugPrint()
 
     def draw(self, pygame, surface, x_offset, y_offset) -> None:
 
