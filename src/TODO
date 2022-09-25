@@ -1,4 +1,4 @@
-Feature: Visual
+FEATURE: Visual
 ??/??/?? ??:?? ??
 --------------------------------------------------------------------------------
 Keep movement classic where the snake jumps to the next position at a specific
@@ -21,7 +21,7 @@ position
 
 
 
-Feature: Input Buffer
+FEATURE: Input Buffer
 09/24/22 05:53 AM
 --------------------------------------------------------------------------------
 The input buffer is already being implemented. There are just a few kinks to
@@ -37,3 +37,16 @@ new input to be recorded.
 --------------------------------------------------------------------------------
 		I need to review the stack and order in which inputs are added and
 		consumed. TTL of the buffer hasn't been implemented yet.
+
+
+FEATURE: HUD
+09/25/22 02:31 AM
+--------------------------------------------------------------------------------
+Example text display is complete. I will work on a wrapper class that can
+instantiate a new text surface using an already initialzed font. This new class
+will provide methods to handle multiline text. It will store text in an list of
+strings and will keep track of any changes for a new render on the update call.
+Draw logic will be handled internally.
+--------------------------------------------------------------------------------
+	WORK IN PROGRESS - 09/25/22 02:35 AM
+--------------------------------------------------------------------------------

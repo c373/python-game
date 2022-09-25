@@ -3,6 +3,7 @@ import sys, pygame, grid, snake, random, math, controls
 class game(object):
     DEBUG = False
     inputBuffer: controls.InputBuffer
+    headlineFont: pygame.font.Font
 
     class Colors:
         def __init__(self) -> None:
@@ -14,6 +15,10 @@ class game(object):
         pygame.init()
 
         self.COLORS = self.Colors()
+
+        self.headlineFont = pygame.font.Font("../assets/fonts/MirandaNbp-X242.ttf", 32)
+        self.title = self.headlineFont.render("00000", False, self.COLORS.WHITE)
+        self.readme = self.headlineFont.render("NAVIGATION - WASD  OR  ARROW KEYS", False, self.COLORS.WHITE)
 
         # in pixels
         self.SCREEN_WIDTH, self.SCREEN_HEIGHT = 800, 600
@@ -117,6 +122,7 @@ class game(object):
         # clear the screen with black
         self.screen.fill(self.COLORS.BLACK)
 
+
         # draw the grid
         grid.drawGrid(pygame, \
                       self.screen, \
@@ -138,6 +144,8 @@ class game(object):
 
         # draw the player snake
         self.player.draw(pygame, self.screen, self.GRID_X, self.GRID_Y)
+
+        self.screen.blit(self.readme, [0,0])
 
         # flush the buffer and display on the screen
         pygame.display.flip()
