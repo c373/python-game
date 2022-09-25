@@ -102,7 +102,7 @@ class snake:
             self.moveBy(self.direction)
             self.timeSinceLastMove = 0
 
-        inputBuffer.DebugPrint()
+        # inputBuffer.DebugPrint()
 
     def draw(self, pygame, surface, x_offset, y_offset) -> None:
 

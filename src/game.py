@@ -1,4 +1,4 @@
-import sys, pygame, grid, snake, random, math, controls
+import sys, pygame, grid, snake, random, math, controls, text_utils
 
 class game(object):
     DEBUG = False
@@ -17,6 +17,16 @@ class game(object):
         self.COLORS = self.Colors()
 
         self.headlineFont = pygame.font.Font("../assets/fonts/MirandaNbp-X242.ttf", 32)
+
+        self.textTest = text_utils.Text("TEST!\nTest2", self.headlineFont, False, self.COLORS.WHITE)
+        self.textTest = text_utils.Text(
+            """
+            TEST!
+            Test2
+            Test3
+            """, self.headlineFont, False, self.COLORS.WHITE)
+        # self.textTest = text_utils.Text("", self.headlineFont, False, self.COLORS.WHITE)
+
         self.title = self.headlineFont.render("00000", False, self.COLORS.WHITE)
         self.readme = self.headlineFont.render("NAVIGATION - WASD  OR  ARROW KEYS", False, self.COLORS.WHITE)
 
@@ -146,6 +156,7 @@ class game(object):
         self.player.draw(pygame, self.screen, self.GRID_X, self.GRID_Y)
 
         self.screen.blit(self.readme, [0,0])
+        self.textTest.draw(self.screen, [100, 100])
 
         # flush the buffer and display on the screen
         pygame.display.flip()
