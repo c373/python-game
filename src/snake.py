@@ -62,6 +62,7 @@ class snake:
         self.__size = 2
         self.head = self.__segments[0]
         self.moveInterval = 4.0
+        self.moveInterval = 0.5
         self.timeSinceLastMove = 0.0
         self.CELL_SIZE = CELL_SIZE
         self.__color = COLOR
