@@ -2,7 +2,6 @@ import sys, pygame, grid, snake, random, math, controls, text_utils
 
 class game(object):
     DEBUG = False
-    inputBuffer: controls.InputBuffer
     headlineFont: pygame.font.Font
 
     class Colors:
@@ -95,23 +94,19 @@ class game(object):
                 if event.type == pygame.KEYDOWN:
 
                     if event.key == pygame.K_UP:
-                        if self.player.lastDirection != controls.Direction.DOWN:
-                            self.player.direction = controls.Direction.UP
+                        self.player.direction = controls.Direction.UP
                         # self.inputBuffer.push(controls.Direction.UP)
 
                     if event.key == pygame.K_DOWN:
-                        if self.player.lastDirection != controls.Direction.UP:
-                            self.player.direction = controls.Direction.DOWN
+                        self.player.direction = controls.Direction.DOWN
                         # self.inputBuffer.push(controls.Direction.DOWN)
 
                     if event.key == pygame.K_LEFT:
-                        if self.player.lastDirection != controls.Direction.RIGHT:
-                            self.player.direction = controls.Direction.LEFT
+                        self.player.direction = controls.Direction.LEFT
                         # self.inputBuffer.push(controls.Direction.LEFT)
 
                     if event.key == pygame.K_RIGHT:
-                        if self.player.lastDirection != controls.Direction.LEFT:
-                            self.player.direction = controls.Direction.RIGHT
+                        self.player.direction = controls.Direction.RIGHT
                         # self.inputBuffer.push(controls.Direction.RIGHT)
 
         if not self.gameOver:
@@ -129,11 +124,10 @@ class game(object):
                 self.COLORS.WHITE = self.COLORS.RED
 
             if self.player.checkInSnake(self.food, False):
-                self.player.grow()
+                self.player.grow = True
                 self.generateFood()
 
-            self.inputBuffer.update(dt)
-            self.player.update(dt, self.inputBuffer)
+            self.player.update(dt)
 
     def draw(self):
 
