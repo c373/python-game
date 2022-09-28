@@ -51,7 +51,7 @@ class snake:
 
     def __init__(self, initLoc: list[int], CELL_SIZE: float, COLOR: list[int], inputBuffer: controls.InputBuffer) -> None:
         self.direction = inputBuffer.pop()
-        self.lastDirection = self.direction.copy()
+        self.lastDirection = self.direction[:]
         self.nextLoc[0] = initLoc[0] + self.direction[0]
         self.nextLoc[1] = initLoc[1] + self.direction[1]
 
@@ -96,14 +96,12 @@ class snake:
         realMoveInterval = self.moveInterval / 2 if self.speed else self.moveInterval
 
         if self.timeSinceLastMove > realMoveInterval:
-            self.direction = inputBuffer.pop()
+            # self.direction = inputBuffer.pop()
             self.lastDirection = self.direction.copy()
             self.nextLoc[0] = self.__segments[0]._location[0] + self.direction[0]
             self.nextLoc[1] = self.__segments[0]._location[1] + self.direction[1]
             self.moveBy(self.direction)
             self.timeSinceLastMove = 0
-
-        # inputBuffer.DebugPrint()
 
     def draw(self, pygame, surface, x_offset, y_offset) -> None:
 

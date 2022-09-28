@@ -95,16 +95,24 @@ class game(object):
                 if event.type == pygame.KEYDOWN:
 
                     if event.key == pygame.K_UP:
-                        self.inputBuffer.push(controls.Direction.UP)
+                        if self.player.lastDirection != controls.Direction.DOWN:
+                            self.player.direction = controls.Direction.UP
+                        # self.inputBuffer.push(controls.Direction.UP)
 
                     if event.key == pygame.K_DOWN:
-                        self.inputBuffer.push(controls.Direction.DOWN)
+                        if self.player.lastDirection != controls.Direction.UP:
+                            self.player.direction = controls.Direction.DOWN
+                        # self.inputBuffer.push(controls.Direction.DOWN)
 
                     if event.key == pygame.K_LEFT:
-                        self.inputBuffer.push(controls.Direction.LEFT)
+                        if self.player.lastDirection != controls.Direction.RIGHT:
+                            self.player.direction = controls.Direction.LEFT
+                        # self.inputBuffer.push(controls.Direction.LEFT)
 
                     if event.key == pygame.K_RIGHT:
-                        self.inputBuffer.push(controls.Direction.RIGHT)
+                        if self.player.lastDirection != controls.Direction.LEFT:
+                            self.player.direction = controls.Direction.RIGHT
+                        # self.inputBuffer.push(controls.Direction.RIGHT)
 
         if not self.gameOver:
 
@@ -124,7 +132,7 @@ class game(object):
                 self.player.grow()
                 self.generateFood()
 
-            self.inputBuffer.update()
+            self.inputBuffer.update(dt)
             self.player.update(dt, self.inputBuffer)
 
     def draw(self):
