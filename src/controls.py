@@ -1,5 +1,3 @@
-import os
-
 class Direction:
     LEFT    = [-1, 0]
     UP      = [0, -1]

@@ -1,8 +1,16 @@
 import sys, pygame, grid, snake, random, math, controls, text_utils
 
+class GameState:
+    STARTMENU = 0,
+    PLAYING = 1,
+    PAUSED = 2,
+    GAMEOVER = 3
+
 class game(object):
     DEBUG = False
     headlineFont: pygame.font.Font
+    state = GameState.STARTMENU
+    UI: dict
 
     class Colors:
         def __init__(self) -> None:
@@ -14,20 +22,6 @@ class game(object):
         pygame.init()
 
         self.COLORS = self.Colors()
-
-        self.headlineFont = pygame.font.Font("../assets/fonts/MirandaNbp-X242.ttf", 32)
-
-        self.textTest = text_utils.Text("TEST!\nTest2", self.headlineFont, False, self.COLORS.WHITE)
-        self.textTest = text_utils.Text(
-            """
-            TEST!
-            Test2
-            Test3
-            """, self.headlineFont, False, self.COLORS.WHITE)
-        # self.textTest = text_utils.Text("", self.headlineFont, False, self.COLORS.WHITE)
-
-        self.title = self.headlineFont.render("00000", False, self.COLORS.WHITE)
-        self.readme = self.headlineFont.render("NAVIGATION - WASD  OR  ARROW KEYS", False, self.COLORS.WHITE)
 
         # in pixels
         self.SCREEN_WIDTH, self.SCREEN_HEIGHT = 800, 600
@@ -45,23 +39,29 @@ class game(object):
         # create the displayable screen, its a surface that we can draw to
         self.screen = pygame.display.set_mode((800, 600))
 
-        # variables to manage game state
-        self.running = True
-        self.gameOver = False
+        self.h1 = pygame.font.Font("../assets/fonts/MirandaNbp-X242.ttf", 104)
+        self.h2 = pygame.font.Font("../assets/fonts/MirandaNbp-X242.ttf", 64)
+
+        self.UI = { \
+            "STARTMENU": [ \
+                text_utils.Text("PRESS ENTER", [400, 350], self.h2, False, self.COLORS.RED), \
+                text_utils.Text("SNAKE GAME", [400, 250], self.h1, False, self.COLORS.WHITE), \
+            ] \
+        }
 
         # necessary for tracking update frames
         self.clock = pygame.time.Clock()
         self.fps = 60
         self.dt = 0
 
-        # init the input buffer
-        self.inputBuffer = controls.InputBuffer(controls.Direction.RIGHT)
-
         # init player snake
-        self.player = snake.snake([math.floor(self.GRID_WIDTH / 2), math.floor(self.GRID_HEIGHT / 2)], \
+        self.player = snake.snake( \
+                                  [ \
+                                      math.floor(self.GRID_WIDTH / 2), \
+                                      math.floor(self.GRID_HEIGHT / 2) \
+                                  ], \
                                   self.CELL_SIZE, \
-                                  self.COLORS.WHITE, \
-                                  self.inputBuffer
+                                  self.COLORS.WHITE \
                                   )
 
         self.generateFood()
@@ -77,39 +77,35 @@ class game(object):
     def update(self, dt):
 
         for event in pygame.event.get():
-            if event.type == pygame.QUIT or self.running == False:
-                pygame.quit()
-                sys.exit()
-
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    self.running = False
+                    pygame.quit()
+                    sys.exit()
+
+                if self.state == GameState.STARTMENU:
+                    self.state = GameState.PLAYING
 
             if pygame.key.get_mods() & pygame.KMOD_SHIFT:
                 self.player.speed = True
             else:
                 self.player.speed = False
 
-            if not self.gameOver:
+            if self.state == GameState.PLAYING:
                 if event.type == pygame.KEYDOWN:
 
                     if event.key == pygame.K_UP:
-                        self.player.direction = controls.Direction.UP
-                        # self.inputBuffer.push(controls.Direction.UP)
+                        self.player.directionBuffer = controls.Direction.UP
 
                     if event.key == pygame.K_DOWN:
-                        self.player.direction = controls.Direction.DOWN
-                        # self.inputBuffer.push(controls.Direction.DOWN)
+                        self.player.directionBuffer = controls.Direction.DOWN
 
                     if event.key == pygame.K_LEFT:
-                        self.player.direction = controls.Direction.LEFT
-                        # self.inputBuffer.push(controls.Direction.LEFT)
+                        self.player.directionBuffer = controls.Direction.LEFT
 
                     if event.key == pygame.K_RIGHT:
-                        self.player.direction = controls.Direction.RIGHT
-                        # self.inputBuffer.push(controls.Direction.RIGHT)
+                        self.player.directionBuffer = controls.Direction.RIGHT
 
-        if not self.gameOver:
+        if self.state == GameState.PLAYING:
 
             # check that the snake is not out of bounds
             if \
@@ -120,7 +116,7 @@ class game(object):
                 # self.player.checkInSnake(self.player.head.GetLocation(), True):
 
                 # end game if true
-                self.gameOver = True
+                self.state = GameState.GAMEOVER
                 self.COLORS.WHITE = self.COLORS.RED
 
             if self.player.checkInSnake(self.food, False):
@@ -134,38 +130,38 @@ class game(object):
         # clear the screen with black
         self.screen.fill(self.COLORS.BLACK)
 
+        if self.state == GameState.STARTMENU:
+            for uiText in self.UI["STARTMENU"]:
+                uiText.draw(self.screen)
+        else:
+            # draw the grid
+            grid.drawGrid(pygame, \
+                          self.screen, \
+                          self.COLORS.WHITE, \
+                          self.GRID_X, self.GRID_Y, \
+                          self.GRID_WIDTH, \
+                          self.GRID_HEIGHT, \
+                          self.CELL_SIZE, \
+                          self.DEBUG
+                          )
 
-        # draw the grid
-        grid.drawGrid(pygame, \
-                      self.screen, \
-                      self.COLORS.WHITE, \
-                      self.GRID_X, self.GRID_Y, \
-                      self.GRID_WIDTH, \
-                      self.GRID_HEIGHT, \
-                      self.CELL_SIZE, \
-                      self.DEBUG
-                      )
+            # draw the food
+            pygame.draw.rect(self.screen, \
+                             self.COLORS.RED, \
+                             pygame.Rect(self.GRID_X + self.food[0] * self.CELL_SIZE, \
+                                         self.GRID_Y + self.food[1] * self.CELL_SIZE, \
+                                         self.CELL_SIZE, self.CELL_SIZE) \
+                             )
 
-        # draw the food
-        pygame.draw.rect(self.screen, \
-                         self.COLORS.RED, \
-                         pygame.Rect(self.GRID_X + self.food[0] * self.CELL_SIZE, \
-                                     self.GRID_Y + self.food[1] * self.CELL_SIZE, \
-                                     self.CELL_SIZE, self.CELL_SIZE) \
-                         )
-
-        # draw the player snake
-        self.player.draw(pygame, self.screen, self.GRID_X, self.GRID_Y)
-
-        self.screen.blit(self.readme, [0,0])
-        self.textTest.draw(self.screen, [100, 100])
+            # draw the player snake
+            self.player.draw(pygame, self.screen, self.GRID_X, self.GRID_Y)
 
         # flush the buffer and display on the screen
         pygame.display.flip()
 
 
     def run(self):
-        while self.running:
+        while True:
 
             self.dt = self.clock.tick(self.fps)/1000.0
             self.update(self.dt)
