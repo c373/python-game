@@ -15,3 +15,14 @@ def clamp(num, min, max):
         return min
 
     return num
+
+def colorWrap(num: int) -> int:
+    if num > 255:
+        return num - 256
+    elif num < 0:
+        return num + 256
+
+    return num
+
+def fadeColor(color: list[int], factor: int) -> list[int]:
+    return [colorWrap(color[0] - factor), colorWrap(color[1] - factor), colorWrap(color[2] - factor)]

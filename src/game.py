@@ -46,7 +46,8 @@ class game(object):
             "STARTMENU": [ \
                 text_utils.Text("PRESS ENTER", [400, 350], self.h2, False, self.COLORS.RED), \
                 text_utils.Text("SNAKE GAME", [400, 250], self.h1, False, self.COLORS.WHITE), \
-            ] \
+            ], \
+            "PAUSED": [text_utils.Text("PAUSED", [400, 300], self.h1, False, self.COLORS.WHITE)]
         }
 
         # necessary for tracking update frames
@@ -77,13 +78,6 @@ class game(object):
     def update(self, dt):
 
         for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    pygame.quit()
-                    sys.exit()
-
-                if self.state == GameState.STARTMENU:
-                    self.state = GameState.PLAYING
 
             if pygame.key.get_mods() & pygame.KMOD_SHIFT:
                 self.player.speed = True
@@ -92,6 +86,10 @@ class game(object):
 
             if self.state == GameState.PLAYING:
                 if event.type == pygame.KEYDOWN:
+
+                    if event.key == pygame.K_RETURN:
+                        self.state = GameState.PAUSED
+                        return
 
                     if event.key == pygame.K_UP:
                         self.player.directionBuffer = controls.Direction.UP
@@ -104,6 +102,16 @@ class game(object):
 
                     if event.key == pygame.K_RIGHT:
                         self.player.directionBuffer = controls.Direction.RIGHT
+
+
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    pygame.quit()
+                    sys.exit()
+
+                if event.key == pygame.K_RETURN:
+                    if self.state == GameState.STARTMENU or GameState.PAUSED:
+                        self.state = GameState.PLAYING
 
         if self.state == GameState.PLAYING:
 
@@ -155,6 +163,11 @@ class game(object):
 
             # draw the player snake
             self.player.draw(pygame, self.screen, self.GRID_X, self.GRID_Y)
+
+        if self.state == GameState.PAUSED:
+            pygame.draw.rect(self.screen, self.COLORS.BLACK, pygame.Rect(0, 0, 800, 600))
+            for uiText in self.UI["PAUSED"]:
+                uiText.draw(self.screen)
 
         # flush the buffer and display on the screen
         pygame.display.flip()
