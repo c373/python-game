@@ -55,5 +55,3 @@ class Text:
     def draw(self, dest: pygame.surface.Surface) -> None:
         for i in range(0, len(self.contentSurface)):
             dest.blit(self.contentSurface[i], [self.position[0], self.position[1] + i * self.__lineSpacing])
-
-

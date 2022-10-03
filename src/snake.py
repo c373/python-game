@@ -1,4 +1,4 @@
-import utils, controls, os
+import utils, controls
 
 class segment:
     _location = [0, 0]
@@ -10,16 +10,19 @@ class segment:
         return self._location[:]
 
     def draw(self, pygame, surface, x_offset, y_offset, cellSize, color) -> None:
-        pygame.draw.rect(surface, \
-                         color, \
-                         pygame.Rect(x_offset + cellSize * self._location[0], \
-                                     y_offset + cellSize * self._location[1], \
-                                     cellSize, \
-                                     cellSize \
-                                     ) \
-                         )
+        pygame.draw.rect(
+            surface,
+            color,
+            pygame.Rect(
+                x_offset + cellSize * self._location[0],
+                y_offset + cellSize * self._location[1],
+                cellSize,
+                cellSize
+            )
+        )
 
-    def drawLerped(self, pygame, surface, x_offset, y_offset, cellSize, color, lastLoc, pct) -> None:
+    def drawLerped(
+            self, pygame, surface, x_offset, y_offset, cellSize, color, lastLoc, pct) -> None:
         lerpedLoc = [
             utils.lerp(self._location[0], lastLoc[0], pct),
             utils.lerp(self._location[1], lastLoc[1], pct),
@@ -62,12 +65,14 @@ class snake:
         self.timeSinceLastMove = 0.0
         self.CELL_SIZE = CELL_SIZE
         self.__color = COLOR
-        
+
     def checkInSnake(self, location: list[int], skipHead: bool) -> bool :
         start = 1 if skipHead else 0
         for i in range(start, self.__size):
-            if self.__segments[i]._location[0] == location[0] and \
-            self.__segments[i]._location[1] == location[1]:
+            if (
+                    self.__segments[i]._location[0] == location[0] and
+                    self.__segments[i]._location[1] == location[1]
+                ):
                 return True
 
         return False
@@ -77,15 +82,27 @@ class snake:
 
         if self.timeSinceLastMove > self.__moveInterval:
 
-            if (self.__direction == controls.Direction.UP and self.directionBuffer == controls.Direction.DOWN) or \
-                (self.__direction == controls.Direction.DOWN and self.directionBuffer == controls.Direction.UP) or \
-                (self.__direction == controls.Direction.LEFT and self.directionBuffer == controls.Direction.RIGHT) or \
-                (self.__direction == controls.Direction.RIGHT and self.directionBuffer == controls.Direction.LEFT):
-                    pass
+            if (
+                    self.__direction == controls.Direction.UP and 
+                    self.directionBuffer == controls.Direction.DOWN
+                    or
+                    self.__direction == controls.Direction.DOWN and
+                    self.directionBuffer == controls.Direction.UP
+                    or
+                    self.__direction == controls.Direction.LEFT and
+                    self.directionBuffer == controls.Direction.RIGHT
+                    or
+                    self.__direction == controls.Direction.RIGHT and
+                    self.directionBuffer == controls.Direction.LEFT
+                ):
+                pass
             else:
                 self.__direction = self.directionBuffer
 
-            self.__moveInterval = self.__baseInterval / 2 if self.speed else self.__baseInterval
+            self.__moveInterval = (
+                self.__baseInterval / 2 if self.speed else self.__baseInterval
+            )
+
             self.nextLoc[0] = self.__segments[0]._location[0] + self.__direction[0]
             self.nextLoc[1] = self.__segments[0]._location[1] + self.__direction[1]
             self.__segments.insert(0, segment(self.nextLoc))
@@ -99,7 +116,7 @@ class snake:
 
             self.timeSinceLastMove = 0
 
-            
+
 
     def draw(self, pygame, surface, x_offset, y_offset) -> None:
 
@@ -110,19 +127,19 @@ class snake:
         if self.grow:
             r += 1
         else:
-            self.__segments[self.__size].drawLerped(pygame, \
-                                          surface, \
-                                          x_offset, \
-                                          y_offset, \
-                                          self.CELL_SIZE, \
-                                          self.__color, \
-                                          self.__segments[self.__size - 1].GetLocation(), \
-                                          pct)
+            self.__segments[self.__size].drawLerped(pygame,
+                                                    surface,
+                                                    x_offset,
+                                                    y_offset,
+                                                    self.CELL_SIZE,
+                                                    self.__color,
+                                                    self.__segments[self.__size - 1].GetLocation(),
+                                                    pct)
 
         for i in range(r, -1, -1):
-            self.__segments[i].draw(pygame, \
-                     surface, \
-                     x_offset, \
-                     y_offset, \
-                     self.CELL_SIZE, \
-                     self.__color)
+            self.__segments[i].draw(pygame,
+                                    surface,
+                                    x_offset,
+                                    y_offset,
+                                    self.CELL_SIZE,
+                                    self.__color)
