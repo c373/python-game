@@ -1,4 +1,5 @@
-import sys, pygame, grid, snake, random, math, controls, ui
+import sys, pygame, grid, snake, random, math, controls
+from ui import *
 
 class GameState:
     STARTMENU = 0,
@@ -8,8 +9,9 @@ class GameState:
 
 class game(object):
     DEBUG = False
-    headlineFont: pygame.font.Font
     state = GameState.STARTMENU
+    score: int = 0
+    highscore: int = 0
     UI: dict
 
     class Colors:
@@ -45,47 +47,84 @@ class game(object):
 
         self.UI = {
             GameState.STARTMENU: [
-                ui.Text("SNAKE GAME", [400, 300], self.h1, False, self.COLORS.WHITE),
-                ui.Text("PRESS ENTER", [400, 350], self.h2, False, self.COLORS.RED),
+                Text("SNAKE GAME", [400, 300], Alignment.CENTER, self.h1, False, self.COLORS.WHITE),
+                Text("PRESS ENTER", [400, 350], Alignment.CENTER, self.h2, False, self.COLORS.RED),
             ],
             GameState.PAUSED: [
-                ui.Text("PAUSED", [400, 300], self.h1, False, self.COLORS.WHITE),
-                ui.Text("ENTER TO RESUME", [400, 350], self.h2, False, self.COLORS.RED),
+                Text("PAUSED", [400, 300], Alignment.CENTER, self.h1, False, self.COLORS.WHITE),
+                Text("ENTER TO RESUME", [400, 350], Alignment.CENTER, self.h2, False, self.COLORS.RED),
             ],
             GameState.PLAYING: [
-                ui.Text(
+                Text(
                     "ARROW KEYS OR  WASD TO MOVE",
                     [400, 475],
+                    Alignment.CENTER,
                     self.h3,
                     False,
                     self.COLORS.WHITE
                 ),
-                ui.Text(
+                Text(
                     "ENTER TO PAUSE",
                     [400, 515],
+                    Alignment.CENTER,
                     self.h3,
                     False,
                     self.COLORS.WHITE
                 ),
-                ui.Text(
+                Text(
                     "ESC TO EXIT",
                     [400, 555],
+                    Alignment.CENTER,
+                    self.h3,
+                    False,
+                    self.COLORS.WHITE
+                ),
+                Text(
+                    "SCORE:",
+                    [200, 10],
+                    Alignment.LEFT, 
+                    self.h3,
+                    False,
+                    self.COLORS.WHITE
+                ),
+                Text(
+                    "0",
+                    [275, 10],
+                    Alignment.LEFT, 
                     self.h3,
                     False,
                     self.COLORS.WHITE
                 )
             ],
             GameState.GAMEOVER: [
-                ui.Text(
+                Text(
                     "GAMEOVER",
                     [400, 300],
+                    Alignment.CENTER,
                     self.h1,
                     False,
                     self.COLORS.RED
                 ),
-                ui.Text(
+                Text(
+                    "SCORE:--",
+                    [400, 350],
+                    Alignment.CENTER,
+                    self.h3,
+                    False,
+                    self.COLORS.WHITE
+                ),
+                Text(
+                    "HIGHSCORE:--",
+                    [400, 375],
+                    Alignment.CENTER,
+                    self.h3,
+                    False,
+                    self.COLORS.WHITE
+                ),
+                Text(
                     "ENTER - RESET",
                     [400, 555],
+                    Alignment.CENTER,
                     self.h3,
                     False,
                     self.COLORS.WHITE
@@ -111,6 +150,8 @@ class game(object):
             self.COLORS.WHITE
         )
         self.generateFood()
+        self.score = 0
+        self.UI[GameState.PLAYING][4].replace(str(self.score))
 
 
     def generateFood(self):
@@ -176,9 +217,19 @@ class game(object):
                 self.state = GameState.GAMEOVER
                 self.COLORS.WHITE = self.COLORS.RED
 
+                if self.score > self.highscore:
+                    self.highscore = self.score
+
+                self.UI[GameState.GAMEOVER][1].replace("SCORE:" + str(self.score))
+                self.UI[GameState.GAMEOVER][2].replace("HIGHSCORE:" + str(self.highscore))
+                print("here")
+
             if self.player.checkInSnake(self.food, False):
                 self.player.grow = True
                 self.generateFood()
+                self.score += 1
+                self.UI[GameState.PLAYING][4].replace(str(self.score))
+                
 
             self.player.update(dt)
 
